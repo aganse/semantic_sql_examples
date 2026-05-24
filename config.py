@@ -3,7 +3,8 @@ DB_URL = "postgresql://script_runner@localhost:5432/seattle_airbnb_db"
 # DB password is handled securely via ~/.pgpass which contains a line like:
 #   localhost:5432:seattle_airbnb_db:script_runner:mypasswordhere
 
-EMBED_TYPE = "E5"  # {currently "E5" or "CLIP"}
+# CLIP is faster but less accurate than E5
+EMBED_TYPE = "CLIP"  # {currently "E5" or "CLIP"}
 
 # This model path is only needed for EMBED_TYPE="CLIP" above:
 # Alas you must copy/paste this from output of the download_model_and_data.py

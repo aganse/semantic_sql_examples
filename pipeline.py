@@ -1,4 +1,6 @@
 import json
+import time
+
 import numpy as np
 from sqlalchemy import create_engine
 
@@ -22,9 +24,9 @@ elif EMBED_TYPE == "CLIP":
 
 for reviews_df in db_helper.fetch_review_chunks(engine, chunk_size=500):
 
+    starttime = time.time()
     rows = []
     chunknum += 1
-    print(f"processing chunk {chunknum}")
 
     texts = reviews_df["comments"].tolist()
 
@@ -46,6 +48,9 @@ for reviews_df in db_helper.fetch_review_chunks(engine, chunk_size=500):
     with engine.begin() as conn:
         db_helper.insert_embeddings(conn, rows)
 
-    # still testing, so for now stopping after first few chunks...
-    if chunknum == 3:
-        break
+    endtime = time.time()
+    print(f"finished processing chunk {chunknum}; processing/insert time {(endtime - starttime):.3f} seconds")
+
+    # just for testing, to stop after first few chunks...
+    # if chunknum == 3:
+    #     break

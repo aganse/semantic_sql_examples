@@ -49,8 +49,11 @@ explore and demonstrate semantic search related ideas.
         in `embeddings_768` table
       - by default the OpenCLIP ViT-L-14 model is used (because it's really fast
         and requires few resources).  after trying that one you can change the
-        EMBED_TYPE in config.py from CLIP to E5.  Both can go into that
+        EMBED_TYPE in config.py from CLIP to E5.  both types can go into that
         embeddings_768 table (they both have length 768 embedding vectors and
         the tags field in that table records which EMBED_TYPE it was), and then
         you can specify the tag desired in database queries later.
+      - on my MacBookPro-M2-2022 that OpenCLIP model takes about 43 minutes to
+        compute the embeddings for the 84849 reviews, and the E5 model takes
+        about 4 hours to do so.
 
