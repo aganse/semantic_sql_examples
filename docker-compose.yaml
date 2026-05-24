@@ -1,0 +1,21 @@
+services:
+    schemaspy_airbnb:
+        image: schemaspy/schemaspy
+        container_name: schemaspy
+        volumes:
+            - ./spy_data:/output
+        command:
+            - "-t"
+            - "pgsql11"
+            - "-db"
+            - "${DB_NAME:-seattle_airbnb_db}"
+            - "-host"
+            - "${DB_HOST:-host.docker.internal}"
+            - "-port"
+            - "${DB_PORT:-5432}"
+            - "-u"
+            - "${DB_USER:-script_runner}"
+            - "-p"
+            - "${DB_PW:-neverPutYourPWhere_onlyUseEnvVar}"
+            # (alas I could not get schemaspy to recognize ~/.pgpass
+            # so using env var DB_PW for the password.)

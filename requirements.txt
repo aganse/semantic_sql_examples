@@ -1,0 +1,7 @@
+kagglehub
+open_clip_torch
+psycopg2-binary
+pandas
+sqlalchemy
+torch
+transformers
