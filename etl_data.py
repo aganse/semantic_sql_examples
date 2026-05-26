@@ -51,7 +51,6 @@ for col in currency_cols:
     cleaned = listing_df[col].astype("string").str.replace(r"[$,]", "", regex=True)
     listing_df[col] = pd.to_numeric(cleaned, errors="coerce")
 
-exit
 
 ## Creating the "Hosts" dataframe and cleaning it (2751 rows × 12 columns)
 print("Creating/cleaning hosts df...")
@@ -101,9 +100,9 @@ reviews_df = pd.read_csv(reviews_file,encoding="utf8")
 reviews_df = reviews_df.rename(index=str,columns={"date":"review_date"})
 reviews_df = reviews_df.rename(columns={"id":"review_id"})
 # Create new data with select columns for the AirBnB listings
-review_df = reviews_df[['review_id', "listing_id", "review_date", "reviewer_id", "reviewer_name", "comments"]].copy()
+reviews_df = reviews_df[['review_id', "listing_id", "review_date", "reviewer_id", "reviewer_name", "comments"]].copy()
 # convert dates to datetime
-review_df["review_date"] = pd.to_datetime(review_df["review_date"])
+reviews_df["review_date"] = pd.to_datetime(reviews_df["review_date"])
 # trim newlines and "exterior" whitespace from comments (not in original ipynb)
 reviews_df["comments"] = (
     reviews_df["comments"]

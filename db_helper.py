@@ -1,11 +1,12 @@
+import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
 
 
 def fetch_embedding_chunks(engine, embed_type, chunk_size=5000):
-    query = f"""SELECT id, entry_time, review_id, embedding, tag
+    query = """SELECT id, entry_time, review_id, embedding, tag
                 FROM embeddings_768
-                WHERE tag->>'embed_type' = '{embed_type}'
+                WHERE tag->>'embed_type' = :embed_type
                   AND NOT (tag ? 'sem_axis')
                 ORDER BY 1"""
     yield from pd.read_sql(
@@ -42,7 +43,7 @@ def insert_table(df: pd.DataFrame, table_name: str, db_url: str):
     with engine.begin() as conn:
         df.to_sql(
             name=table_name,
-            con=engine,
+            con=conn,
             if_exists="append",
             index=False,
             chunksize=2000
