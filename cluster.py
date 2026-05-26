@@ -1,5 +1,4 @@
 import ast
-import sys
 
 import hdbscan
 import numpy as np
@@ -9,6 +8,7 @@ from sklearn.preprocessing import normalize
 from sqlalchemy import create_engine
 import umap
 
+import db_helper
 from config import DB_URL, EMBED_TYPE
 
 
@@ -20,40 +20,27 @@ engine = create_engine(DB_URL)
 # (Fit PCA using sequential partial fit - avoids loading all 100k rows at once.)
 print("Phase 1...")
 
-BATCH_SIZE = 5000
+BATCH_SIZE = 500
 PCA_DIMS = 50  # Good intermediate compression before UMAP
 
 ipca = IncrementalPCA(n_components=PCA_DIMS)
 
-offset = 0
+batchnum = 0
 
-while True:
-    query = f"""
-        SELECT id, review_id, tag, embedding
-        FROM embeddings_768
-        WHERE tag->>'embed_type' = '{EMBED_TYPE}'
-          AND NOT (tag ? 'sem_axis')
-        ORDER BY id
-        LIMIT {BATCH_SIZE}
-        OFFSET {offset}
-    """
-    # print(query)
-
-    batch_df = pd.read_sql(query, engine)
-
-    if len(batch_df) == 0:
-        break
-
-    X = np.vstack(
-        batch_df["embedding"].apply(ast.literal_eval).values
-    )
+for batch_df in db_helper.fetch_embedding_chunks(
+    engine,
+    EMBED_TYPE,
+    chunk_size=BATCH_SIZE
+):
+    X = np.vstack(batch_df["embedding"].apply(ast.literal_eval).values)
     X = normalize(X)
 
     ipca.partial_fit(X)
 
-    offset += BATCH_SIZE
+    batchnum += 1
 
-    print("pca-fit batch", offset)
+    print("pca-fit batch", batchnum)
+
 
 ###########################################################
 # Phase 2: transform all rows through PCA
@@ -65,14 +52,13 @@ all_ids = []
 all_tags = []
 all_vectors = []
 
-offset = 0
+batchnum = 0
 
-while True:
-    # reuse original query from above to ensure it's the same
-    batch_df = pd.read_sql(query, engine)
-
-    if len(batch_df) == 0:
-        break
+for batch_df in db_helper.fetch_embedding_chunks(
+    engine,
+    EMBED_TYPE,
+    chunk_size=BATCH_SIZE
+):
 
     X = np.vstack(
         batch_df["embedding"].apply(ast.literal_eval).values
@@ -85,8 +71,8 @@ while True:
     all_ids.extend(batch_df["id"].tolist())
     all_tags.extend(batch_df["tag"].tolist())
 
-    offset += BATCH_SIZE
-    print("pca-transformed batch", offset)
+    batchnum += 1
+    print("pca-transformed batch", batchnum)
 
 X_pca_all = np.vstack(all_vectors)
 
@@ -143,4 +129,3 @@ print(cluster_series.value_counts().sort_index())
 
 # df["cluster"] = cluster_labels
 # print(df["cluster"].value_counts().sort_index())
-

@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 
 
 def fetch_embedding_chunks(engine, embed_type, chunk_size=5000):
-    query = """SELECT id, entry_time, review_id, embedding, tag
+    query = """SELECT id, review_id, embedding, tag
                 FROM embeddings_768
                 WHERE tag->>'embed_type' = :embed_type
                   AND NOT (tag ? 'sem_axis')
