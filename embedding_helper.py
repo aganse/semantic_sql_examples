@@ -15,6 +15,21 @@ model_clip = None
 tokenizer = None
 
 
+def initialize_embedding_model(embed_type):
+    if embed_type == "E5":
+        initialize_e5()
+    elif embed_type == "CLIP":
+        initialize_clip()
+
+
+def compute_embeddings(text, embed_type):
+    if embed_type == "E5":
+        embeddings = compute_e5_embeddings(text)
+    elif embed_type == "CLIP":
+        embeddings = compute_clip_embeddings(text)
+    return embeddings
+
+
 def initialize_e5() -> None:
     global tok
     global model

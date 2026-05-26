@@ -119,7 +119,7 @@ CREATE TABLE embeddings_768(
     entry_time TIMESTAMP DEFAULT current_timestamp,
     review_id INTEGER,
     embedding vector(768),
-    tag TEXT,
+    tag JSONB,
     CONSTRAINT fk_review
         FOREIGN KEY(review_id)
         REFERENCES property_reviews(review_id)
