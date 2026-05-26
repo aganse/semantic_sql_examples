@@ -9,9 +9,8 @@ import embedding_helper
 from config import DB_URL, EMBED_TYPE
 
 
-engine = create_engine(DB_URL)
 chunknum = 0
-
+engine = create_engine(DB_URL)
 embedding_helper.initialize_embedding_model(EMBED_TYPE)
 
 for reviews_df in db_helper.fetch_review_chunks(engine, chunk_size=500):
