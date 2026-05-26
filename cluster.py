@@ -123,6 +123,21 @@ cluster_series = pd.Series(cluster_labels)
 print(cluster_series.value_counts().sort_index())
 
 
+###########################################################
+# Phase 5: write cluster labels back to embeddings_768.tag
+print("Phase 5...")
+
+with engine.begin() as conn:
+    for embed_id, cluster_label in zip(all_ids, cluster_labels):
+        db_helper.insert_embedding_tag(
+            conn,
+            embed_id,
+            {"cluster": int(cluster_label)}
+        )
+
+print("cluster labels written back to embeddings_768.tag")
+
+
 # HDBSCAN uses:
 #   -1 => noise/outlier
 #    0,1,2,... => clusters

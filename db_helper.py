@@ -1,6 +1,8 @@
+import json
+
 import numpy as np
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 
 def fetch_embedding_chunks(engine, embed_type, chunk_size=5000):
@@ -48,6 +50,21 @@ def insert_table(df: pd.DataFrame, table_name: str, db_url: str):
             index=False,
             chunksize=2000
         )
+
+
+def insert_embedding_tag(conn, embed_id, tagdict):
+    query = text(
+        """UPDATE embeddings_768
+           SET tag = COALESCE(tag, '{}'::jsonb) || CAST(:tagjson AS jsonb)
+           WHERE id = :embed_id"""
+    )
+    conn.execute(
+        query,
+        {
+            "embed_id": embed_id,
+            "tagjson": json.dumps(tagdict),
+        }
+    )
 
 
 def to_pgvector(v: np.ndarray) -> str:
