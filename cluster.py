@@ -20,7 +20,7 @@ engine = create_engine(DB_URL)
 # (Fit PCA using sequential partial fit - avoids loading all 100k rows at once.)
 print("Phase 1...")
 
-BATCH_SIZE = 500
+BATCH_SIZE = 5000
 PCA_DIMS = 50  # Good intermediate compression before UMAP
 
 ipca = IncrementalPCA(n_components=PCA_DIMS)

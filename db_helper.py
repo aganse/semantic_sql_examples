@@ -11,7 +11,7 @@ def fetch_embedding_chunks(engine, embed_type, chunk_size=5000):
         """SELECT id, review_id, embedding, tag
            FROM embeddings_768
            WHERE tag->>'embed_type' = :embed_type
-             AND NOT (tag ? 'sem_axis')
+             AND NOT (tag ? 'semaxis')
            ORDER BY 1"""
     )
     yield from pd.read_sql(
