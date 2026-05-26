@@ -16,6 +16,7 @@ tokenizer = None
 
 
 def initialize_embedding_model(embed_type):
+    """Initialize the configured embedding model."""
     if embed_type == "E5":
         initialize_e5()
     elif embed_type == "CLIP":
@@ -23,6 +24,7 @@ def initialize_embedding_model(embed_type):
 
 
 def compute_embeddings(text, embed_type):
+    """Compute embeddings for a batch of input texts."""
     if embed_type == "E5":
         embeddings = compute_e5_embeddings(text)
     elif embed_type == "CLIP":
@@ -31,6 +33,7 @@ def compute_embeddings(text, embed_type):
 
 
 def initialize_e5() -> None:
+    """Load the local E5 tokenizer and model."""
     global tok
     global model
     tok = AutoTokenizer.from_pretrained("./models/e5")
@@ -38,6 +41,7 @@ def initialize_e5() -> None:
 
 
 def compute_e5_embeddings(texts: list[str]) -> np.ndarray:
+    """Compute normalized E5 embeddings for a list of texts."""
     # E5 expects "query: ..." or "passage: ..."
     texts = [f"passage: {t}" for t in texts]
     batch = tok(texts, padding=True, truncation=True, return_tensors="pt")
@@ -50,6 +54,7 @@ def compute_e5_embeddings(texts: list[str]) -> np.ndarray:
 
 
 def initialize_clip() -> None:
+    """Load the local OpenCLIP text model and tokenizer."""
     global device
     global model_clip
     global tokenizer
@@ -64,9 +69,9 @@ def initialize_clip() -> None:
 
 
 def compute_clip_embeddings(texts: list[str]) -> np.ndarray:
+    """Compute normalized CLIP text embeddings for a list of texts."""
     tokens = tokenizer(texts).to(device)
     with torch.no_grad():
         f = model_clip.encode_text(tokens)
         f = torch.nn.functional.normalize(f, dim=-1)
     return f.cpu().numpy()  # (N, 768)
-

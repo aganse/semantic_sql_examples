@@ -6,11 +6,14 @@ from sqlalchemy import create_engine, text
 
 
 def fetch_embedding_chunks(engine, embed_type, chunk_size=5000):
-    query = """SELECT id, review_id, embedding, tag
-                FROM embeddings_768
-                WHERE tag->>'embed_type' = :embed_type
-                  AND NOT (tag ? 'sem_axis')
-                ORDER BY 1"""
+    """Yield embedding rows from Postgres in dataframe chunks."""
+    query = text(
+        """SELECT id, review_id, embedding, tag
+           FROM embeddings_768
+           WHERE tag->>'embed_type' = :embed_type
+             AND NOT (tag ? 'sem_axis')
+           ORDER BY 1"""
+    )
     yield from pd.read_sql(
         query,
         engine,
@@ -20,15 +23,17 @@ def fetch_embedding_chunks(engine, embed_type, chunk_size=5000):
 
 
 def fetch_review_chunks(engine, chunk_size=5000):
-    query = "SELECT review_id, comments FROM property_reviews ORDER BY 1"
+    """Yield review rows from Postgres in dataframe chunks."""
+    query = text("SELECT review_id, comments FROM property_reviews ORDER BY 1")
     yield from pd.read_sql(
         query,
         engine,
-        chunksize=chunk_size
+        chunksize=chunk_size,
     )
 
 
 def insert_embeddings(conn, rows):
+    """Append embedding rows into the embeddings_768 table."""
     df = pd.DataFrame(rows)
     df.to_sql(
         "embeddings_768",
@@ -41,6 +46,7 @@ def insert_embeddings(conn, rows):
 
 
 def insert_table(df: pd.DataFrame, table_name: str, db_url: str):
+    """Append a dataframe into the specified database table."""
     engine = create_engine(db_url)
     with engine.begin() as conn:
         df.to_sql(
@@ -53,6 +59,7 @@ def insert_table(df: pd.DataFrame, table_name: str, db_url: str):
 
 
 def insert_embedding_tag(conn, embed_id, tagdict):
+    """Merge a tag dict into one embeddings_768 row's JSONB tag."""
     query = text(
         """UPDATE embeddings_768
            SET tag = COALESCE(tag, '{}'::jsonb) || CAST(:tagjson AS jsonb)
@@ -68,5 +75,6 @@ def insert_embedding_tag(conn, embed_id, tagdict):
 
 
 def to_pgvector(v: np.ndarray) -> str:
+    """Convert a numpy vector into pgvector literal text."""
     # pgvector accepts string literal like '[0.1, 0.2, ...]'
     return "[" + ",".join(f"{x:.6f}" for x in v.tolist()) + "]"
