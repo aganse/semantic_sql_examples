@@ -43,8 +43,9 @@ potentially making an enormous difference in the amount of data pulled.
   2. Only needed once: download the models and dataset
       - `python download_model_and_data.py`
       - this script pulls the Kaggle Seattle AirBnB dataset from the Kaggle API
-        and the OpenCLIP ViT-L-14 model and Sentence Transformers E5-base-v2
-        model from HuggingFace, to be stored and used locally.
+        and the [ViT-L-14 model from OpenCLIP](https://huggingface.co/intfloat/e5-base-v2)
+        and the [Sentence Transformers E5-base-v2 model from HuggingFace](https://huggingface.co/intfloat/e5-base-v2),
+        to be stored and used locally.
       - in the console output from that run, find the long OpenCLIP model path
         string and paste into config.py under CLIP_PATH (only needed for that
         model due to its funny uuid-like path it gets downloaded to).
@@ -63,6 +64,8 @@ potentially making an enormous difference in the amount of data pulled.
   3. (Optional) Document the DB schema
       - `docker-compose.yaml` runs SchemaSpy and writes the generated schema
         docs into `spy_data/`.
+      - the relationship diagram at top of this README came from the
+        Relationships Compact view in the resulting SchemaSpy html output.
 
   4. Create embeddings
       - `python compute_review_embeddings.py` runs embedding model on review
