@@ -18,17 +18,17 @@ Then using PostgreSQL's pgvector extension enabling fast & efficient vector
 cosine similarity computation, various SQL queries are run on the database
 contents to explore semantic-search examples.
 
-The Usage section below provides line-by-line copy and paste instructions
-to run the contents of this repo.  The Example Results section after that
+The **Usage** section below provides line-by-line copy and paste instructions
+to run the contents of this repo.  The **Example Results** section after that
 shows example output from the three query examples in the `example_queries`
 subdirectory demonstrating the semantic-search explorations.
 
-The database has the relationships form seen below, so note that while not
-a theme in the current example queries, a big advantage of doing these types
-of queries fully in database is that the query can include both filtering on
-other relationships (e.g. only listings in a certain neighborhood or under
-a certain price) and also the similarity/proximity calculations, potentially
-making an enormous difference in the amount of data pulled.
+The database has the relationships form seen below, so while not much of a
+theme in the current example queries, a big advantage of doing these types
+of semantic queries fully in database is that the query can additionally include
+filtering on other relationships (e.g. only listings in a certain neighborhood
+or under a certain price) on top of the similarity/proximity calculations,
+potentially making an enormous difference in the amount of data pulled.
 
 ![database-relationships](doc/relationships.png)
 
